@@ -1,6 +1,6 @@
 window.addEventListener("load", displayWorkshops());
 
-async function addCliente(e) {
+async function addEquipamento(e) {
     const token = sessionStorage.getItem("token"); //PEGA O TOKEM DO LOCAL STORAGE E JOGA NO HEADERS PARA VERIFICACAO
     const headers = {
         "Content-Type": "application/json",
@@ -8,52 +8,53 @@ async function addCliente(e) {
     };
     e.preventDefault();
     try {
-        const response = await fetch("http://localhost:8000/cliente", {
+        const response = await fetch("http://localhost:8000/estoque", {
             method: "POST",
             headers,
             body: JSON.stringify({
-                nome: e.target.nome.value,
-                telefone: e.target.telefone.value,
-                email: e.target.email.value,
-                logradouro: e.target.querySelector("#logradouro").value,
-                complemento: e.target.complemento.value,
-                bairro: e.target.bairro.value,
+                equipamento: e.target.equipamento.value,
+                marca: e.target.marca.value,
+                modelo: e.target.modelo.value,
+                quantidade: e.target.quantidade.value,
+                dataEntrada: e.target.dataEntrada.value,
+                localizacao: e.target.localizacao.value,
+                descricao: e.target.descricao.value,
             }),
         });
         const dados = await response.json();
         console.log(dados);
-        window.alert("Cliente Cadastrado Com Sucesso!");
-        window.location.href = "../html/crudCliente.html";
+        window.alert("Equipamento Cadastrado Com Sucesso!");
+        window.location.href = "../index.html";
     } catch (erro) {
         console.log(erro);
     }
 }
-
 async function displayWorkshops() {
-    const table = document.getElementById("displayClientes");
+    const table = document.getElementById("displayEquipamentos");
     table.innerHTML = "";
     const token = sessionStorage.getItem("token");
     const headers = {
         "Content-Type": "application/json",
         Authorization: token,
     };
-    let dadoBruto = await fetch("http://localhost:8000/cliente", { headers });
+    let dadoBruto = await fetch("http://localhost:8000/estoque", { headers });
     let workshops = await dadoBruto.json();
 
     workshops.forEach(async(workshop) => {
         const newRow = table.insertRow();
         newRow.innerHTML = `
-            <td>${workshop.nome}</td>
-            <td>${workshop.telefone}</td>
-            <td>${workshop.email}</td>
-            <td>${workshop.logradouro}</td>
-            <td>${workshop.complemento}</td> 
-            <td>${workshop.bairro}</td>
+            <td>${workshop.equipamento}</td>
+            <td>${workshop.marca}</td>
+            <td>${workshop.modelo}</td>
+            <td>${workshop.quantidade}</td>
+            <td>${workshop.dataEntrada}</td>
+            <td>${workshop.localizacao}</td> 
+            <td>${workshop.descricao}</td>
             <td>
-            <a class="btn btn-primary" href="../html/attCliente.html?id=${workshop.id}">Editar →</a>
+            <a class="btn btn-primary" href="html/attEstoque.html?id=${workshop.id}">Editar →</a>
             <br>
             <br>
-            <button onclick="deletecliente(${workshop.id})">
+            <button onclick="deleteEquipamento(${workshop.id})">
             <img src="../img/botao.jpg" alt="Excluir" width="30" height="30">
         </button>
             </td>
@@ -61,14 +62,14 @@ async function displayWorkshops() {
     });
 }
 
-async function deletecliente(index) {
+async function deleteEquipamento(index) {
     const token = sessionStorage.getItem("token"); //PEGA O TOKEM DO LOCAL STORAGE E JOGA NO HEADERS PARA VERIFICACAO
     const headers = {
         "Content-Type": "application/json",
         Authorization: token,
     };
 
-    const response = await fetch(`http://localhost:8000/cliente/${index}`, {
+    const response = await fetch(`http://localhost:8000/estoque/${index}`, {
         method: "DELETE",
         headers,
     });
